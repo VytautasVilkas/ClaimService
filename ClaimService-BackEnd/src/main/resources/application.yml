@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3306/ClaimService
+    username: root
+    password: vilkas123
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MariaDBDialect
+        application:
+          security:
+            jwt:
+              secret-key: 4D6251655368566D597133743677397A24432646294A404E635266556A576E5A
+#              expiration: 86400000 # a day
+#              refresh-token:
+#                expiration: 604800000 # 7 days
+
+server:
+  port: 9000
