@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -23,7 +24,7 @@ public class UserController {
         return ResponseEntity.ok(savedUserDTO);
     }
     @GetMapping("/find/{id}")
-    public ResponseEntity<UserResponseDTO> findUserById(@PathVariable Long id) {
+    public ResponseEntity<UserResponseDTO> findUserById(@PathVariable UUID id) {
         UserResponseDTO user = userService.getUserById(id);
         if (user != null) {
             return ResponseEntity.ok(user);

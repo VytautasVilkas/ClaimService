@@ -18,6 +18,12 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
+    public void addProduct(ProductDTO productDTO) {
+        Product product = new Product();
+        product.setProductname(productDTO.getProductname());
+        product.setPrice(productDTO.getPrice());
+        productRepository.save(product);
+    }
     public ProductDTO findProductById(Long productId) {
         Optional<Product> productOptional = productRepository.findById(productId);
         if (productOptional.isPresent()) {

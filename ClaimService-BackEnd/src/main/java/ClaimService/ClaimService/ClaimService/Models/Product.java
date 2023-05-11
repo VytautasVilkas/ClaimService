@@ -17,7 +17,7 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String productname;
-    private float price;
+    private double price;
     @OneToMany(mappedBy = "product")
     private List <Claim> claims;
 

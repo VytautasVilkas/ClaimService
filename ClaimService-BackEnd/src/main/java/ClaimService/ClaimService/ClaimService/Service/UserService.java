@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,7 +43,7 @@ public class UserService {
         userResponseDTO.setRole(savedUser.getRole());
         return userResponseDTO;
     }
-    public UserResponseDTO getUserById(Long userId) {
+    public UserResponseDTO getUserById(UUID userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -55,19 +56,26 @@ public class UserService {
             throw new UserNotFoundException(userId);
         }
     }
+
+
+
     public List<UserResponseDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
-        return users.stream()
-                .map(this::convertToUserDTO)
+        // Convert User entities to UserResponseDTO objects
+        List<UserResponseDTO> responseDTOs = users.stream()
+                .map(this::convertToUserResponseDTO)
                 .collect(Collectors.toList());
+        return responseDTOs;
     }
-    private UserResponseDTO convertToUserDTO(User user) {
-        UserResponseDTO userDTO = new UserResponseDTO();
-        userDTO.setUsername(user.getUsername());
-        userDTO.setEmail(user.getEmail());
-        userDTO.setRole(user.getRole());
-        return userDTO;
+
+    // Helper method to convert User entity to UserResponseDTO
+    private UserResponseDTO convertToUserResponseDTO(User user) {
+        UserResponseDTO dto = new UserResponseDTO();
+        // Map relevant fields from User entity to UserResponseDTO
+        dto.setUsername(user.getUsername());
+        dto.setEmail(user.getEmail());
+        dto.setRole(user.getRole());
+        // Add other fields as needed
+        return dto;
     }
 }
-
-

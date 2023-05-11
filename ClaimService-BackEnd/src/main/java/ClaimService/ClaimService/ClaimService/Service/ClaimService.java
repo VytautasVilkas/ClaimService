@@ -34,9 +34,6 @@ public class ClaimService {
     private ProductRepository productRepository;
     @Autowired
     private UserRepository userRepository;
-    private UserRequestDTO userRequestDTO;
-    private UserResponseDTO userResponseDTO;
-
     public void addclaim(ClaimRequestDTO claimRequestDTO) {
         Claim claim = new Claim();
         claim.setMessage(claimRequestDTO.getMessage());
@@ -99,8 +96,8 @@ public class ClaimService {
             Optional<Product> productOptional = productRepository.findById(productId);
             productOptional.ifPresent(product -> dto.setProductName(product.getProductname()));
         }
-        // is claim responsedto isimtas stringas username
-//        Long userId = claim.getUser().getUserId();
+
+//        UUID userId = claim.getUser().getId();
 //        if (userId != null) {
 //            Optional<User> userOptional = userRepository.findById(userId);
 //            userOptional.ifPresent(user -> dto.setUsername(user.getUsername()));
