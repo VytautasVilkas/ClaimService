@@ -1,19 +1,14 @@
 package ClaimService.ClaimService.ClaimService.Models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Entity
 public class Claim {
 
@@ -31,7 +26,6 @@ public class Claim {
     private User user;
     @Lob
     private byte[] photoData;
-
 
 
 }

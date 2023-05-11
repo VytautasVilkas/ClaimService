@@ -10,6 +10,13 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MariaDBDialect
+#  security:
+#      basic:
+#          enabled: true
+#      user:
+#          name: 123
+#          password: 123
+#          role: STAFF
 #        application:
 #          security:
 #            jwt:

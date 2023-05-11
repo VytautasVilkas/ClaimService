@@ -1,10 +1,7 @@
 package ClaimService.ClaimService.ClaimService.Models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,8 +9,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Entity
 public class Product {
 
@@ -24,8 +20,6 @@ public class Product {
     private float price;
     @OneToMany(mappedBy = "product")
     private List <Claim> claims;
-
-
 
 
 

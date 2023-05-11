@@ -1,11 +1,8 @@
 package ClaimService.ClaimService.DTO.Request;
 
 import ClaimService.ClaimService.ClaimService.Enum.Role;
-import ClaimService.ClaimService.ClaimService.Models.Claim;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
 @Data
 @RequiredArgsConstructor
 public class UserRequestDTO {
