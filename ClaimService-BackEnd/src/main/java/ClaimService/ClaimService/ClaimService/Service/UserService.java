@@ -4,6 +4,7 @@ import ClaimService.ClaimService.ClaimService.Exception.UserNotFoundException;
 import ClaimService.ClaimService.ClaimService.Models.User;
 import ClaimService.ClaimService.ClaimService.Repositories.UserRepository;
 import ClaimService.ClaimService.DTO.Request.UserRequestDTO;
+import ClaimService.ClaimService.DTO.Request.UserUpdateDTO;
 import ClaimService.ClaimService.DTO.Response.UserResponseDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -43,7 +44,22 @@ public class UserService {
         userResponseDTO.setRole(savedUser.getRole());
         return userResponseDTO;
     }
-    public UserResponseDTO getUserById(UUID userId) {
+    public void updateUser(UserUpdateDTO userUpdateDTO) {
+        Optional<User> userOptional = userRepository.findById(userUpdateDTO.getId());
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setUsername(userUpdateDTO.getUsername());
+            user.setPassword(userUpdateDTO.getPassword());
+            user.setEmail(userUpdateDTO.getEmail());
+            user.setName(userUpdateDTO.getName());
+            user.setSurname(userUpdateDTO.getSurname());
+            user.setRole(userUpdateDTO.getRole());
+            userRepository.save(user);
+        } else {
+            throw new UserNotFoundException(userUpdateDTO.getId());
+        }
+    }
+    public UserResponseDTO getUserById(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();

@@ -8,7 +8,8 @@ import java.util.UUID;
 
 @Data
 @RequiredArgsConstructor
-public class UserRequestDTO {
+public class UserUpdateDTO {
+    private Long id;
     private String username;
     private String password;
     private String email;
