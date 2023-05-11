@@ -3,6 +3,7 @@ package ClaimService.ClaimService.ClaimService.Models;
 
 import ClaimService.ClaimService.ClaimService.Enum.Role;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -17,6 +18,7 @@ public class User {
     @Id
     @GeneratedValue
     private long id;
+    @Pattern(regexp = "[A-ZĄČĘĖĮŠŲŪŽ][a-ząčęėįšųūž]{2,}", message = "{Pattern.Darbuotojas.vardas}")
     private String username;
     private String password;
     private String name;
