@@ -16,16 +16,6 @@ public class ProductController {
 
     @PostMapping("/addproduct")
     Product newProduct(@RequestBody Product newproduct) {
-
        return productRepository.save(newproduct);
-
     }
-
-
-
-
-
-
-
-
 }

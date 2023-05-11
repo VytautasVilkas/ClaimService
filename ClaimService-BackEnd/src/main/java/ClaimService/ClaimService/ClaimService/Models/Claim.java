@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -21,11 +22,16 @@ public class Claim {
     private Long id;
     private String message;
     private double damage;
-    private LocalDate date = LocalDate.now();
-    @OneToMany(mappedBy = "claim", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    private List<Product> products;
+    private LocalDateTime date = LocalDateTime.now();
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
     @Lob
     private byte[] photoData;
+
 
 
 }

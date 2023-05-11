@@ -6,6 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,9 +22,9 @@ public class Product {
     private long id;
     private String productname;
     private float price;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "claim_id")
-    private Claim claim;
+    @OneToMany(mappedBy = "product")
+    private List <Claim> claims;
+
 
 
 
