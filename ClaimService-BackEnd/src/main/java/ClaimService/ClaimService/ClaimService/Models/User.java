@@ -18,7 +18,6 @@ public class User {
     @Id
     @GeneratedValue
     private long id;
-    @Pattern(regexp = "[A-ZĄČĘĖĮŠŲŪŽ][a-ząčęėįšųūž]{2,}", message = "{Pattern.Darbuotojas.vardas}")
     private String username;
     private String password;
     private String name;
