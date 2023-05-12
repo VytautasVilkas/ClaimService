@@ -1,6 +1,7 @@
 package ClaimService.ClaimService.ClaimService.Service;
 
 import ClaimService.ClaimService.ClaimService.Exception.ClaimNotFoundException;
+import ClaimService.ClaimService.ClaimService.Exception.ProductNotFoundException;
 import ClaimService.ClaimService.ClaimService.Models.Claim;
 import ClaimService.ClaimService.ClaimService.Models.Product;
 import ClaimService.ClaimService.ClaimService.Models.User;
@@ -24,15 +25,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ClaimService {
-
-    @Autowired
     private ClaimRepository claimRepository;
     public ClaimService(ClaimRepository claimRepository) {
         this.claimRepository = claimRepository;
     }
-    @Autowired
     private ProductRepository productRepository;
-    @Autowired
     private UserRepository userRepository;
     public void addclaim(ClaimRequestDTO claimRequestDTO) {
         Claim claim = new Claim();
@@ -95,7 +92,7 @@ public class ClaimService {
         if (productId != null) {
             Optional<Product> productOptional = productRepository.findById(productId);
             productOptional.ifPresent(product -> dto.setProductName(product.getProductname()));
-        }
+        } else throw new ProductNotFoundException(productId);
 
 //        UUID userId = claim.getUser().getId();
 //        if (userId != null) {

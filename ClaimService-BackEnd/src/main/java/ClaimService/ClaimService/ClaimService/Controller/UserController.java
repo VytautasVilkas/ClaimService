@@ -5,20 +5,22 @@ import ClaimService.ClaimService.ClaimService.Service.UserService;
 import ClaimService.ClaimService.ClaimService.Validations.UserValidator;
 import ClaimService.ClaimService.DTO.Request.UserRequestDTO;
 import ClaimService.ClaimService.DTO.Response.UserResponseDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.ObjectError;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin("http://localhost:3000")
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
-
     private final UserValidator userValidator;
 
     public UserController(UserService userService, UserValidator userValidator) {
@@ -27,12 +29,17 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createUser(@RequestBody UserRequestDTO userDTO, BindingResult bindingResult) {
-        userValidator.validate(userDTO, bindingResult);
+    public ResponseEntity<?> createUser(@RequestBody UserRequestDTO userRequestDTO) {
+        BindingResult bindingResult = new BeanPropertyBindingResult(userRequestDTO, "userRequestDTO");
+        userValidator.validate(userRequestDTO, bindingResult);
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body("Validation errors occurred");
+            List<String> errorMessages = bindingResult.getAllErrors()
+                    .stream()
+                    .map(ObjectError::getDefaultMessage)
+                    .collect(Collectors.toList());
+            return ResponseEntity.badRequest().body(errorMessages);
         }
-        UserResponseDTO savedUserDTO = userService.createUser(userDTO);
+        UserResponseDTO savedUserDTO = userService.createUser(userRequestDTO);
         return ResponseEntity.ok(savedUserDTO);
     }
     @PatchMapping("/edit/{id}")

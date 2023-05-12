@@ -4,11 +4,13 @@ import ClaimService.ClaimService.ClaimService.Enum.Role;
 import ClaimService.ClaimService.ClaimService.Exception.UserNotFoundException;
 import ClaimService.ClaimService.ClaimService.Models.User;
 import ClaimService.ClaimService.ClaimService.Repositories.UserRepository;
+import ClaimService.ClaimService.ClaimService.Validations.UserValidator;
 import ClaimService.ClaimService.DTO.Request.UserRequestDTO;
 import ClaimService.ClaimService.DTO.Response.UserResponseDTO;
-import org.springframework.context.support.BeanDefinitionDsl;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,13 +20,14 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final UserValidator userValidator;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, UserValidator userValidator) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userValidator = userValidator;
     }
     public UserResponseDTO createUser(UserRequestDTO userRequestDTO) {
-
         User user = new User();
         user.setUsername(userRequestDTO.getUsername());
         user.setEmail(userRequestDTO.getEmail());
@@ -33,13 +36,14 @@ public class UserService {
         user.setRole(Role.CLIENT);
         String hashedPassword = passwordEncoder.encode(userRequestDTO.getPassword());
         user.setPassword(hashedPassword);
-
+        
         User savedUser = userRepository.save(user);
 
         UserResponseDTO userResponseDTO = new UserResponseDTO();
         userResponseDTO.setUsername(savedUser.getUsername());
         userResponseDTO.setEmail(savedUser.getEmail());
         userResponseDTO.setRole(savedUser.getRole());
+
         return userResponseDTO;
     }
     public User updateUser(Long id, UserRequestDTO userUpdateDTO) {
@@ -80,21 +84,16 @@ public class UserService {
 
     public List<UserResponseDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
-        // Convert User entities to UserResponseDTO objects
         List<UserResponseDTO> responseDTOs = users.stream()
                 .map(this::convertToUserResponseDTO)
                 .collect(Collectors.toList());
         return responseDTOs;
     }
-
-    // Helper method to convert User entity to UserResponseDTO
     private UserResponseDTO convertToUserResponseDTO(User user) {
         UserResponseDTO dto = new UserResponseDTO();
-        // Map relevant fields from User entity to UserResponseDTO
         dto.setUsername(user.getUsername());
         dto.setEmail(user.getEmail());
         dto.setRole(user.getRole());
-        // Add other fields as needed
         return dto;
     }
 
