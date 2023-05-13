@@ -1,18 +1,22 @@
 package ClaimService.ClaimService.ClaimService.Controller;
 
 import ClaimService.ClaimService.ClaimService.Exception.UserNotFoundException;
-import ClaimService.ClaimService.ClaimService.Models.User;
 import ClaimService.ClaimService.ClaimService.Service.UserService;
-import ClaimService.ClaimService.ClaimService.Validations.UserValidator;
 import ClaimService.ClaimService.DTO.Request.UserUpdateDTO;
 import ClaimService.ClaimService.DTO.Request.UserRequestDTO;
 import ClaimService.ClaimService.DTO.Response.UserResponseDTO;
+import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.ObjectError;
 
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -21,6 +25,8 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    @Autowired
+    private ModelMapper modelMapper;
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -29,18 +35,29 @@ public class UserController {
 
     // finally fixed
     @PostMapping("/create")
-    public ResponseEntity<?> createUser(@RequestBody UserRequestDTO userRequestDTO) {
-        List<String> errorMessages = userService.validateUser(userRequestDTO);
-        if (!errorMessages.isEmpty()) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserRequestDTO userRequestDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            List<String> errorMessages = bindingResult.getAllErrors()
+                    .stream()
+                    .map(ObjectError::getDefaultMessage)
+                    .collect(Collectors.toList());
             return ResponseEntity.badRequest().body(errorMessages);
         }
         UserResponseDTO savedUserDTO = userService.createUser(userRequestDTO);
         return ResponseEntity.ok(savedUserDTO);
     }
-    @PatchMapping("/edit/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserUpdateDTO userUpdateDTO) {
+    // needs fixing
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO userUpdateDTO,BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            List<String> errorMessages = bindingResult.getAllErrors()
+                    .stream()
+                    .map(ObjectError::getDefaultMessage)
+                    .collect(Collectors.toList());
+            return ResponseEntity.badRequest().body(errorMessages);
+        }
         try {
-            User updatedUser = userService.updateUser(id, userUpdateDTO);
+            UserResponseDTO dto = userService.updateUser(id, userUpdateDTO);
             return ResponseEntity.ok("User updated successfully.");
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

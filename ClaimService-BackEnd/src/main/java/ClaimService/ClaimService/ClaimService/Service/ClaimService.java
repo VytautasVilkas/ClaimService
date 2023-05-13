@@ -3,60 +3,101 @@ package ClaimService.ClaimService.ClaimService.Service;
 import ClaimService.ClaimService.ClaimService.Exception.ClaimNotFoundException;
 import ClaimService.ClaimService.ClaimService.Exception.ProductNotFoundException;
 import ClaimService.ClaimService.ClaimService.Models.Claim;
+import ClaimService.ClaimService.ClaimService.Models.ImageData;
 import ClaimService.ClaimService.ClaimService.Models.Product;
 import ClaimService.ClaimService.ClaimService.Models.User;
 import ClaimService.ClaimService.ClaimService.Repositories.ClaimRepository;
+import ClaimService.ClaimService.ClaimService.Repositories.ImageDataRepository;
 import ClaimService.ClaimService.ClaimService.Repositories.ProductRepository;
 import ClaimService.ClaimService.ClaimService.Repositories.UserRepository;
 import ClaimService.ClaimService.DTO.Request.ClaimRequestDTO;
-import ClaimService.ClaimService.DTO.Request.UserRequestDTO;
+import ClaimService.ClaimService.DTO.Request.ClaimUpdateDTO;
 import ClaimService.ClaimService.DTO.Response.ClaimResponseDTO;
 import ClaimService.ClaimService.DTO.Response.UserResponseDTO;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.modelmapper.Conditions;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 
 @Service
-@RequiredArgsConstructor
 public class ClaimService {
-    private ClaimRepository claimRepository;
-    public ClaimService(ClaimRepository claimRepository) {
+
+
+    private final ClaimRepository claimRepository;
+    private final ModelMapper modelMapper;
+    private final ProductRepository productRepository;
+    private final UserRepository userRepository;
+    private final ImageDataRepository imageDataRepository;
+
+
+    public ClaimService(ClaimRepository claimRepository, ModelMapper modelMapper, ProductRepository productRepository, UserRepository userRepository, ImageDataRepository imageDataRepository) {
         this.claimRepository = claimRepository;
-    }
-    private ProductRepository productRepository;
-    private UserRepository userRepository;
-    public void addclaim(ClaimRequestDTO claimRequestDTO) {
-        Claim claim = new Claim();
-        claim.setMessage(claimRequestDTO.getMessage());
-        claim.setDamage(claimRequestDTO.getDamage());
-        claim.setPhotoData(claimRequestDTO.getPhotoData());
-        Optional<Product> productOptional = productRepository.findById(claimRequestDTO.getProductId());
-        productOptional.ifPresent(claim::setProduct);
-        claimRepository.save(claim);
+        this.modelMapper = modelMapper;
+        this.productRepository = productRepository;
+        this.userRepository = userRepository;
+        this.imageDataRepository = imageDataRepository;
+
     }
 
-    public void updateClaim(Long claimId, ClaimRequestDTO claimRequestDTO) {
-        Optional<Claim> claimOptional = claimRepository.findById(claimId);
-        if (claimOptional.isPresent()) {
-            Claim claim = claimOptional.get();
-            claim.setMessage(claimRequestDTO.getMessage());
-            claim.setDamage(claimRequestDTO.getDamage());
-            claim.setPhotoData(claimRequestDTO.getPhotoData());
-            Optional<Product> productOptional = productRepository.findById(claimRequestDTO.getProductId());
-            productOptional.ifPresent(claim::setProduct);
+    public ClaimResponseDTO addClaim(ClaimRequestDTO claimRequestDTO) {
+        Product product = productRepository.findById(claimRequestDTO.getProductId())
+                .orElseThrow(() -> new ProductNotFoundException(claimRequestDTO.getProductId()));
+        Claim claim = modelMapper.map(claimRequestDTO, Claim.class);
+        User user = userRepository.findById(claimRequestDTO.getUserId()).orElse(null);
+        claim.setUser(user);
+        ImageData image = imageDataRepository.findById(claimRequestDTO.getImageId()).orElse(null);
+        claim.setImages(image);
+        Claim savedClaim = claimRepository.save(claim);
+        return modelMapper.map(savedClaim, ClaimResponseDTO.class);
+    }
 
-            claimRepository.save(claim);
+
+
+    public ClaimResponseDTO updateClaim(Long claimId, ClaimUpdateDTO claimUpdateDTO) {
+        Optional<Claim> existingClaimOptional = claimRepository.findById(claimId);
+        if (existingClaimOptional.isPresent()) {
+            Claim existingClaim = existingClaimOptional.get();
+
+            if (claimUpdateDTO.getMessage() != null && !claimUpdateDTO.getMessage().isEmpty()) {
+                existingClaim.setMessage(claimUpdateDTO.getMessage());
+            }
+
+            if (claimUpdateDTO.getDamage() != 0.0) {
+                existingClaim.setDamage(claimUpdateDTO.getDamage());
+            }
+
+            if (claimUpdateDTO.getProductId() != null) {
+                Product product = productRepository.findById(claimUpdateDTO.getProductId())
+                        .orElseThrow(() -> new ProductNotFoundException(claimUpdateDTO.getProductId()));
+                existingClaim.setProduct(product);
+            }
+            Claim updatedClaim = claimRepository.save(existingClaim);
+            return modelMapper.map(updatedClaim, ClaimResponseDTO.class);
         } else {
             throw new ClaimNotFoundException(claimId);
         }
     }
 
+    public ClaimResponseDTO findClaimById(Long claimId) {
+        Claim claim = claimRepository.findById(claimId)
+                .orElseThrow(() -> new ClaimNotFoundException(claimId));
+        return modelMapper.map(claim, ClaimResponseDTO.class);
+    }
+    public List<ClaimResponseDTO> findAllClaims() {
+        List<Claim> claims = claimRepository.findAll();
+        return claims.stream()
+                .map(claim -> modelMapper.map(claim, ClaimResponseDTO.class))
+                .collect(Collectors.toList());
+    }
     public void deleteClaim(Long claimId) {
         Optional<Claim> claimOptional = claimRepository.findById(claimId);
         if (claimOptional.isPresent()) {
@@ -66,46 +107,6 @@ public class ClaimService {
             throw new ClaimNotFoundException(claimId);
         }
     }
-    public ClaimResponseDTO findClaimById(Long claimId) {
-        Optional<Claim> claimOptional = claimRepository.findById(claimId);
-        if (claimOptional.isPresent()) {
-            Claim claim = claimOptional.get();
-            return convertToClaimResponseDTO(claim);
-        } else {
-            throw new ClaimNotFoundException(claimId);
-        }
-    }
-
-    public List<ClaimResponseDTO> findAllClaims() {
-        List<Claim> claims = claimRepository.findAll();
-        return claims.stream()
-                .map(this::convertToClaimResponseDTO)
-                .collect(Collectors.toList());
-    }
-
-    private ClaimResponseDTO convertToClaimResponseDTO(Claim claim) {
-        ClaimResponseDTO dto = new ClaimResponseDTO();
-        dto.setMessage(claim.getMessage());
-        dto.setDamage(claim.getDamage());
-        dto.setPhotoData(claim.getPhotoData());
-        Long productId = claim.getProduct().getId();
-        if (productId != null) {
-            Optional<Product> productOptional = productRepository.findById(productId);
-            productOptional.ifPresent(product -> dto.setProductName(product.getProductname()));
-        } else throw new ProductNotFoundException(productId);
-
-//        UUID userId = claim.getUser().getId();
-//        if (userId != null) {
-//            Optional<User> userOptional = userRepository.findById(userId);
-//            userOptional.ifPresent(user -> dto.setUsername(user.getUsername()));
-//        }
-        return dto;
-    }
-
-
-
-
 }
-
 
 

@@ -3,12 +3,11 @@ package ClaimService.ClaimService.ClaimService.Models;
 
 import ClaimService.ClaimService.ClaimService.Enum.Role;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
 import lombok.*;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 
 @Data
@@ -16,7 +15,7 @@ import java.util.UUID;
 @Entity
 public class User {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
     private String username;
     private String password;
@@ -28,7 +27,6 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Claim> claims;
     private LocalDate date = LocalDate.now();
-
 
 
 

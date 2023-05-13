@@ -1,10 +1,13 @@
 package ClaimService.ClaimService.ClaimService.Models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.awt.*;
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,8 +27,12 @@ public class Claim {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    @Lob
-    private byte[] photoData;
+    @ManyToOne
+    @JoinColumn(name = "Image_id")
+    private ImageData images;
+
+
+
 
 
 }

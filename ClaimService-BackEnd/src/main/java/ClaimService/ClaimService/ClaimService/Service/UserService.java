@@ -1,13 +1,16 @@
 package ClaimService.ClaimService.ClaimService.Service;
 
 import ClaimService.ClaimService.ClaimService.Enum.Role;
+import ClaimService.ClaimService.ClaimService.Exception.EmailAlreadyExistsException;
 import ClaimService.ClaimService.ClaimService.Exception.UserNotFoundException;
+import ClaimService.ClaimService.ClaimService.Exception.UsernameAlreadyExistsException;
 import ClaimService.ClaimService.ClaimService.Models.User;
 import ClaimService.ClaimService.ClaimService.Repositories.UserRepository;
-import ClaimService.ClaimService.ClaimService.Validations.UserValidator;
 import ClaimService.ClaimService.DTO.Request.UserRequestDTO;
 import ClaimService.ClaimService.DTO.Request.UserUpdateDTO;
 import ClaimService.ClaimService.DTO.Response.UserResponseDTO;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -16,101 +19,69 @@ import org.springframework.validation.ObjectError;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final UserValidator userValidator;
 
+    @Autowired
+    private ModelMapper modelMapper;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, UserValidator userValidator) {
+    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.userValidator = userValidator;
+
 
     }
     //fixed finally
-    public UserResponseDTO createUser(UserRequestDTO userRequestDTO) {
-        User user = new User();
-        user.setUsername(userRequestDTO.getUsername());
-        user.setEmail(userRequestDTO.getEmail());
-        user.setName(userRequestDTO.getName());
-        user.setSurname(userRequestDTO.getSurname());
-        user.setRole(Role.CLIENT);
-        String hashedPassword = passwordEncoder.encode(userRequestDTO.getPassword());
-        user.setPassword(hashedPassword);
+    public UserResponseDTO createUser(UserRequestDTO userRequestDTO){
+        if (userRepository.existsByUsername(userRequestDTO.getUsername())) {
+            throw new UsernameAlreadyExistsException(userRequestDTO.getUsername());
+        }
+        if (userRepository.existsByEmail(userRequestDTO.getEmail())) {
+            throw new EmailAlreadyExistsException(userRequestDTO.getEmail());
+        }
+            User user = modelMapper.map(userRequestDTO, User.class);
+            String hashedPassword = passwordEncoder.encode(userRequestDTO.getPassword());
+            user.setPassword(hashedPassword);
+            // default useris bus clientas
+            user.setRole(Role.CLIENT);
+            User savedUser = userRepository.save(user);
+            return modelMapper.map(savedUser, UserResponseDTO.class);
 
-        User savedUser = userRepository.save(user);
-
-        UserResponseDTO userResponseDTO = new UserResponseDTO();
-        userResponseDTO.setUsername(savedUser.getUsername());
-        userResponseDTO.setEmail(savedUser.getEmail());
-        userResponseDTO.setRole(savedUser.getRole());
-
-        return userResponseDTO;
     }
-    public User updateUser(Long id, UserUpdateDTO userUpdateDTO) {
-        User existingUser = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-
-        if (userUpdateDTO.username() != null) {
-            existingUser.setUsername(userUpdateDTO.username());
-        }
-        if (userUpdateDTO.email() != null) {
-            existingUser.setEmail(userUpdateDTO.email());
-        }
-        if (userUpdateDTO.name() != null) {
-            existingUser.setName(userUpdateDTO.name());
-        }
-        if (userUpdateDTO.surname() != null) {
-            existingUser.setSurname(userUpdateDTO.surname());
-        }
-
-        return userRepository.save(existingUser);
+    // nesutvarkiau iki galo
+    public UserResponseDTO updateUser(Long id, UserUpdateDTO userUpdateDTO) {
+            if (userRepository.existsByUsername(userUpdateDTO.getUsername())) {
+            throw new UsernameAlreadyExistsException(userUpdateDTO.getUsername());
+            }
+            if (userRepository.existsByEmail(userUpdateDTO.getEmail())) {
+            throw new EmailAlreadyExistsException(userUpdateDTO.getEmail());
+            }
+            User existingUser = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+            // Update the existing user with values from userUpdateDTO
+            modelMapper.map(userUpdateDTO, existingUser);
+            // Save the updated user
+            User updatedUser = userRepository.save(existingUser);
+            // Map the updated user to UserResponseDTO
+            UserResponseDTO dto = modelMapper.map(updatedUser, UserResponseDTO.class);
+            return dto;
     }
-
     public UserResponseDTO getUserById(Long userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent()) {
-
-
-
-
-            User user = userOptional.get();
-            UserResponseDTO userDTO = new UserResponseDTO();
-            userDTO.setUsername(user.getUsername());
-            userDTO.setEmail(user.getEmail());
-            userDTO.setRole(user.getRole());
-            return userDTO;
-        } else {
-            throw new UserNotFoundException(userId);
-        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        UserResponseDTO userResponseDTO = modelMapper.map(user, UserResponseDTO.class);
+        return userResponseDTO;
     }
     public List<UserResponseDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
-        List<UserResponseDTO> responseDTOs = users.stream()
-                .map(this::convertToUserResponseDTO)
+        List<UserResponseDTO> userResponseDTOs = users.stream()
+                .map(user -> modelMapper.map(user, UserResponseDTO.class))
                 .collect(Collectors.toList());
-        return responseDTOs;
+
+        return userResponseDTOs;
     }
-    private UserResponseDTO convertToUserResponseDTO(User user) {
-        UserResponseDTO dto = new UserResponseDTO();
-        dto.setUsername(user.getUsername());
-        dto.setEmail(user.getEmail());
-        dto.setRole(user.getRole());
-        return dto;
-    }
-    public List<String> validateUser(UserRequestDTO userUpdateDTO) {
-        BindingResult bindingResult = new BeanPropertyBindingResult(userUpdateDTO, "userRequestDTO");
-        userValidator.validate(userUpdateDTO, bindingResult);
-        if (bindingResult.hasErrors()) {
-            return bindingResult.getAllErrors()
-                    .stream()
-                    .map(ObjectError::getDefaultMessage)
-                    .collect(Collectors.toList());
-        }
-        return Collections.emptyList();
-    }
+
+
 }

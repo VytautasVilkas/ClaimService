@@ -1,18 +1,25 @@
 package ClaimService.ClaimService.ClaimService.Controller;
 
-import ClaimService.ClaimService.ClaimService.Exception.ProductNotFoundException;
-import ClaimService.ClaimService.ClaimService.Models.Product;
+import ClaimService.ClaimService.ClaimService.Repositories.ImageDataRepository;
 import ClaimService.ClaimService.ClaimService.Repositories.ProductRepository;
 import ClaimService.ClaimService.ClaimService.Service.ClaimService;
-import ClaimService.ClaimService.ClaimService.Validations.ClaimValidator;
+import ClaimService.ClaimService.ClaimService.Service.ImageDataService;
 import ClaimService.ClaimService.DTO.Request.ClaimRequestDTO;
+import ClaimService.ClaimService.DTO.Request.ClaimUpdateDTO;
 import ClaimService.ClaimService.DTO.Response.ClaimResponseDTO;
+import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
+
 
 @RestController
 @CrossOrigin("http://localhost:3000")
@@ -20,32 +27,49 @@ import java.util.Optional;
 public class ClaimController {
 
         private final ClaimService claimService;
-        private final ClaimValidator claimValidator;
         private final ProductRepository productRepository;
-        public ClaimController(ClaimService claimService, ClaimValidator claimValidator, ProductRepository productRepository) {
+        private final ModelMapper modelMapper;
+        private final ImageDataRepository imageDataRepository;
+        private final ImageDataService imageDataService;
+
+
+
+        public ClaimController(ClaimService claimService, ProductRepository productRepository, ModelMapper modelMapper, ImageDataRepository imageDataRepository, ImageDataService imageDataService) {
                 this.claimService = claimService;
-                this.claimValidator = claimValidator;
                 this.productRepository = productRepository;
+                this.modelMapper = modelMapper;
+                this.imageDataRepository = imageDataRepository;
+                this.imageDataService = imageDataService;
+
         }
 
         @PostMapping("/addclaim")
-        public ResponseEntity<String> addClaim(@RequestBody ClaimRequestDTO claimRequestDTO, BindingResult bindingResult) {
-                Optional<Product> productOptional = productRepository.findById(claimRequestDTO.getProductId());
-                if (productOptional.isEmpty()) {
-                        throw new ProductNotFoundException(claimRequestDTO.getProductId());
-                }
-                claimValidator.validate(claimRequestDTO, bindingResult);
+        public ResponseEntity<?> addClaim(@Valid @RequestBody ClaimRequestDTO claimRequestDTO, BindingResult bindingResult) {
                 if (bindingResult.hasErrors()) {
-                        return ResponseEntity.badRequest().body("Validation errors occurred");
+                        List<String> validationErrors = new ArrayList<>();
+                        for (FieldError error : bindingResult.getFieldErrors()) {
+                                validationErrors.add(error.getDefaultMessage());
+                        }
+                        return ResponseEntity.badRequest().body(validationErrors);
                 }
-
-            claimService.addclaim(claimRequestDTO);
-            return ResponseEntity.ok("Claim added successfully");
+                ClaimResponseDTO claim = claimService.addClaim(claimRequestDTO);
+                if (claim != null) {
+                  return ResponseEntity.ok("Claim added successfully.");
+                } else {
+                  return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add claim.");
+                }
         }
         @PutMapping("/updateclaim/{id}")
-        public ResponseEntity<String> updateClaim(@PathVariable Long id, @RequestBody ClaimRequestDTO claimRequestDTO) {
-        claimService.updateClaim(id, claimRequestDTO);
-        return ResponseEntity.ok("Claim updated successfully");
+        public ResponseEntity<?> updateClaim(@PathVariable Long id,@Valid @RequestBody ClaimUpdateDTO claimUpdateDTO,BindingResult bindingResult) {
+                if (bindingResult.hasErrors()) {
+                        List<String> errorMessages = bindingResult.getAllErrors()
+                                .stream()
+                                .map(ObjectError::getDefaultMessage)
+                                .collect(Collectors.toList());
+                        return ResponseEntity.badRequest().body(errorMessages);
+                }
+                ClaimResponseDTO updatedClaim = claimService.updateClaim(id, claimUpdateDTO);
+                return ResponseEntity.ok(updatedClaim);
         }
 
         @DeleteMapping("/deleteclaim/{id}")
@@ -65,6 +89,12 @@ public class ClaimController {
         List<ClaimResponseDTO> claimResponseDTOList = claimService.findAllClaims();
         return ResponseEntity.ok(claimResponseDTOList);
         }
+
+
+
+
+
+
 }
 
 

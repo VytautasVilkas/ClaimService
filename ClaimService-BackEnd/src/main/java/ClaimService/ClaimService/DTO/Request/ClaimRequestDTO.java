@@ -1,15 +1,27 @@
 package ClaimService.ClaimService.DTO.Request;
 
+
+import jakarta.validation.constraints.DecimalMin;
+
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.validation.annotation.Validated;
+
 
 @Data
 @RequiredArgsConstructor
+@Validated
 public class ClaimRequestDTO {
+        @NotEmpty
+        @Size(min = 10, message = "message should have at least 10 characters")
         private String message;
+        @DecimalMin(value = "0.0", inclusive = false, message = "Damage must be greater than 0")
         private double damage;
-        private byte[] photoData;
         private Long productId;
-        private long userId;
+        private Long userId;
+        private Long imageId;
 
 
 }

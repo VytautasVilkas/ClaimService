@@ -11,6 +11,6 @@ import org.apache.catalina.User;
         private double damage;
         private byte[] photoData;
         private String productName;
-//        private String username;
+        private String userName;
     }
 
