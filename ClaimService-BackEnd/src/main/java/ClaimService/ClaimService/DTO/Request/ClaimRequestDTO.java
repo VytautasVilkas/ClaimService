@@ -14,10 +14,9 @@ import org.springframework.validation.annotation.Validated;
 @RequiredArgsConstructor
 @Validated
 public class ClaimRequestDTO {
-        @NotEmpty
         @Size(min = 10, message = "message should have at least 10 characters")
         private String message;
-        @DecimalMin(value = "0.0", inclusive = false, message = "Damage must be greater than 0")
+        @DecimalMin(value = "0.0", inclusive = false, message = "damage must be greater than 0")
         private double damage;
         private Long productId;
         private Long userId;

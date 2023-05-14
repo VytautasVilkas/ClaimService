@@ -14,6 +14,7 @@ public class ClaimUpdateDTO {
     @NotEmpty
     @Size(min = 10, message = "message should have at least 10 characters")
     private String message;
+    @DecimalMin(value = "0.0", inclusive = false, message = "damage must be greater than 0")
     private double damage;
     private Long productId;
 }

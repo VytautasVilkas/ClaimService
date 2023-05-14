@@ -1,15 +1,20 @@
 package ClaimService.ClaimService.DTO.Response;
 
-import ClaimService.ClaimService.ClaimService.Models.Product;
+import ClaimService.ClaimService.ClaimService.Models.ImageData;
+
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
-    @Data
+
+
+
+
+@Data
     @RequiredArgsConstructor
     public class ClaimResponseDTO {
+        private Long id;
         private String message;
         private double damage;
-        private byte[] photoData;
+        private Long photoId;
         private String productName;
         private String userName;
     }

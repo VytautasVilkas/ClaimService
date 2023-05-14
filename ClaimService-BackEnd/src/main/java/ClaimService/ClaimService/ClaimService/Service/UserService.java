@@ -61,11 +61,8 @@ public class UserService {
             throw new EmailAlreadyExistsException(userUpdateDTO.getEmail());
             }
             User existingUser = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
-            // Update the existing user with values from userUpdateDTO
             modelMapper.map(userUpdateDTO, existingUser);
-            // Save the updated user
             User updatedUser = userRepository.save(existingUser);
-            // Map the updated user to UserResponseDTO
             UserResponseDTO dto = modelMapper.map(updatedUser, UserResponseDTO.class);
             return dto;
     }

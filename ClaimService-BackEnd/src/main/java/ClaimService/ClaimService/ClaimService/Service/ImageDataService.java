@@ -1,6 +1,7 @@
 package ClaimService.ClaimService.ClaimService.Service;
 
 
+import ClaimService.ClaimService.ClaimService.Exception.ImageNotFoundException;
 import ClaimService.ClaimService.ClaimService.Models.ImageData;
 import ClaimService.ClaimService.ClaimService.Repositories.ImageDataRepository;
 import ClaimService.ClaimService.DTO.Response.ImageUploadResponse;
@@ -31,7 +32,7 @@ public class ImageDataService {
 
             imageDataRepository.save(imageData);
 
-            return new ImageUploadResponse("Image uploaded successfully.", imageData.getName());
+            return new ImageUploadResponse(imageData.getId(),"Image uploaded successfully.", imageData.getName());
         }
     @Transactional
     public ImageData getInfoByImageByName(String name) {
@@ -41,6 +42,17 @@ public class ImageDataService {
                 .name(dbImage.get().getName())
                 .imageData(ImageUtil.decompressImage(dbImage.get().getImageData())).build();
 
+    }
+    @Transactional
+    public byte[] getImageById(Long id) {
+        Optional<ImageData> dbImage = imageDataRepository.findById(id);
+
+        if (dbImage.isPresent()) {
+            byte[] image = ImageUtil.decompressImage(dbImage.get().getImageData());
+            return image;
+        } else {
+            throw new ImageNotFoundException(id);
+        }
     }
     @Transactional
     public byte[] getImage(String name) {

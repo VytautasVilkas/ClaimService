@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class ProductDTO {
-//    private Long id;
+    private Long id;
     private String productname;
     private double price;
 
