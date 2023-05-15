@@ -16,6 +16,26 @@ export default function UpdateClaim() {
   const [claimErrors, setClaimErrors] = useState({});
   const { message, damage, productId, image } = claim;
   const { id } = useParams();
+  const [productList, setProductList] = useState([]);
+
+    useEffect(() => {
+    const fetchProductList = async () => {
+      try {
+        const response = await axios.get('http://localhost:9000/products/getall');
+        const products = response.data.map((product) => ({
+          id: product.id,
+          productname: product.productname,
+          price: product.price,
+        }));
+        setProductList(products);
+      } catch (error) {
+        console.error('Error fetching product list:', error);
+        setProductList([]);
+      }
+    };
+
+    fetchProductList();
+  }, []);
 
   const onInputChange = (e) => {
     setClaim({ ...claim, [e.target.name]: e.target.value });
@@ -102,24 +122,27 @@ export default function UpdateClaim() {
               {claimErrors.damage && (
                 <div className="invalid-feedback">{claimErrors.damage}</div>
               )}
-            </div>
+           </div>
             <div className="mb-3">
               <label htmlFor="productId" className="form-label">
                 Product
               </label>
-              <input
-                type="number"
-                className={`form-control ${claimErrors.productId && 'is-invalid'}`}
+              <select
+                className={`form-select ${claimErrors.productId && 'is-invalid'}`}
                 id="productId"
-                placeholder="Select product"
                 name="productId"
                 value={productId}
                 onChange={onInputChange}
-              />
-              {claimErrors.productId&& (
-                <div className="invalid-feedback d-block">
-                  {claimErrors.productId}
-                </div>
+              >
+                <option value="">Select product</option>
+                {productList.map((product) => (
+                  <option key={product.id} value={product.id}>
+                    {product.productname}
+                  </option>
+                ))}
+              </select>
+              {claimErrors.productId && (
+                <div className="invalid-feedback d-block">{claimErrors.productId}</div>
               )}
             </div>
                 <div className="mb-3">
