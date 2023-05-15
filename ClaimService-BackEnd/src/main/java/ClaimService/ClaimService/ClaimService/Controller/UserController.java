@@ -1,7 +1,10 @@
 package ClaimService.ClaimService.ClaimService.Controller;
 
 import ClaimService.ClaimService.ClaimService.Exception.UserNotFoundException;
+import ClaimService.ClaimService.ClaimService.Models.User;
+import ClaimService.ClaimService.ClaimService.Repositories.UserRepository;
 import ClaimService.ClaimService.ClaimService.Service.UserService;
+import ClaimService.ClaimService.DTO.Request.UserLoginRequest;
 import ClaimService.ClaimService.DTO.Request.UserUpdateDTO;
 import ClaimService.ClaimService.DTO.Request.UserRequestDTO;
 import ClaimService.ClaimService.DTO.Response.UserResponseDTO;
@@ -10,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.ObjectError;
@@ -25,12 +29,14 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserService userService;
+    private final UserRepository userRepository;
     @Autowired
     private ModelMapper modelMapper;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
 
+        this.userRepository = userRepository;
     }
 
     // finally fixed
@@ -77,5 +83,19 @@ public class UserController {
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
         List<UserResponseDTO> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
+    }
+    @PostMapping("/login")
+    public boolean checkUserCredentials(@Valid @RequestBody UserLoginRequest loginRequest) {
+        String username = loginRequest.getUsername();
+        String password = loginRequest.getPassword();
+        User user = userRepository.findByUsername(username);
+        if (user != null) {
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            boolean isPasswordValid = passwordEncoder.matches(password, user.getPassword());
+            if (isPasswordValid) {
+                return true;
+            }
+        }
+        return false;
     }
 }

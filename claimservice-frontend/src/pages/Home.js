@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import PictureComponent from '../components/PictureComponent';
 import { Link } from 'react-router-dom';
-import moment from 'moment';
+
 
 
 
@@ -22,11 +22,22 @@ export default function Home() {
       console.error('Error fetching claims:', error);
     }
   };
-  const deleteClaim = async (id) => {
-    await axios.delete(`http://localhost:9000/client/deleteclaim/${id}`);
-    loadClaims();
+  const deleteClaim = async (id, photoId) => {
+    try {
+      // Delete the claim
+      await axios.delete(`http://localhost:9000/client/deleteclaim/${id}`);
+
+      // Delete the associated image
+      if (photoId) {
+        await axios.delete(`http://localhost:9000/image/delete/${photoId}`);
+      }
+
+      // Reload the claims
+      await loadClaims();
+    } catch (error) {
+      console.error('Error deleting claim:', error);
+    }
   };
-  
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
@@ -79,7 +90,7 @@ export default function Home() {
                   to={`/editclaim/${claim.id}`}>
                   edit</Link>
                   <button className="btn btn-danger mx-2"
-                  onClick={() => deleteClaim(claim.id)}>
+                  onClick={() => deleteClaim(claim.id,claim.photoId)}>
                   delete
                   </button>
                 </td>

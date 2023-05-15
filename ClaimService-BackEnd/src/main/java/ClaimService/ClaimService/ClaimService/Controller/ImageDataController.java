@@ -49,5 +49,10 @@ public class ImageDataController {
 
         return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
     }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteImage(@PathVariable("id") Long id) {
+        imageDataRepository.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
 
 }

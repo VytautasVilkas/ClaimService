@@ -4,9 +4,13 @@ package ClaimService.ClaimService.ClaimService.Models;
 import ClaimService.ClaimService.ClaimService.Enum.Role;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.boot.autoconfigure.web.WebProperties;
+//import org.springframework.boot.autoconfigure.web.WebProperties;
+//import org.springframework.security.core.GrantedAuthority;
+//import org.springframework.security.core.authority.SimpleGrantedAuthority;
+//import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -14,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Entity
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -29,6 +34,9 @@ public class User {
     private LocalDate date = LocalDate.now();
 
 
+
+
+}
 
 //    @Override
 //    public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -61,4 +69,4 @@ public class User {
 //    public boolean isEnabled() {
 //        return true;
 //    }
-}
+//}

@@ -170,7 +170,7 @@ export default function AddClaim() {
             </div>
                 <div className="mb-3">
                 <label htmlFor="image" className="form-label">
-                Upload Image
+                
                 <ImageUploader onImageUpload={(id) => setClaim({ ...claim, imageId: id })}/>
                 </label>
                 </div>
