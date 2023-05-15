@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const ImageUploader = ({ onImageUpload, error }) => {
+const ImageUploader = ({ onImageUpload }) => {
   const [selectedImage, setSelectedImage] = useState(null);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setSelectedImage(file);
-    onImageUpload(file);
+    uploadImage(file);
   };
 
   const uploadImage = async (image) => {
@@ -32,10 +32,11 @@ const ImageUploader = ({ onImageUpload, error }) => {
     <div>
       <label htmlFor="image">Upload Image:</label>
       <input type="file" id="image" onChange={handleImageChange} />
-      {error && <div className="invalid-feedback">{error}</div>}
     </div>
   );
 };
 
 export default ImageUploader;
+
+
 

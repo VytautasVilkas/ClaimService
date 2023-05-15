@@ -18,18 +18,16 @@ export default function AddClaim() {
   const [claimErrors, setClaimErrors] = useState({});
   const { message, damage, productId, userId, imageId } = claim;
   const [productList, setProductList] = useState([]);
-    
-  useEffect(() => {
+
+    useEffect(() => {
     const fetchProductList = async () => {
       try {
         const response = await axios.get('http://localhost:9000/products/getall');
-        const products = Array.isArray(response.data)
-          ? response.data.map((product) => ({
-              id: product.id,
-              productName: product.productName,
-              price: product.price,
-            }))
-          : [];
+        const products = response.data.map((product) => ({
+          id: product.id,
+          productname: product.productname,
+          price: product.price,
+        }));
         setProductList(products);
       } catch (error) {
         console.error('Error fetching product list:', error);
@@ -49,10 +47,6 @@ export default function AddClaim() {
     
     if (!productId) {
       setClaimErrors({ ...claimErrors, productId: 'Please select a product' });
-      return;
-    }
-    if (!imageId) {
-      setClaimErrors({ ...claimErrors, imageId: 'Please upload an image' });
       return;
     }
     try {
@@ -79,23 +73,21 @@ export default function AddClaim() {
   const handleImageUpload = async (selectedImage) => {
     if (!selectedImage) {
       setClaimErrors({ ...claimErrors, imageId: 'Please upload an image' });
-      setClaim({ ...claim, imageId: '' });
       return;
     }
   
     const formData = new FormData();
     formData.append('image', selectedImage);
-  
+
     try {
       const response = await axios.post('http://localhost:9000/image/add', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-  
+
       const { id: imageId } = response.data;
-      setClaim({ ...claim, imageId });
-      setClaimErrors({ ...claimErrors, imageId: '' }); // Reset the imageId error in the claimErrors state
+      return imageId;
     } catch (error) {
       console.error('Error uploading image:', error);
     }
@@ -154,7 +146,7 @@ export default function AddClaim() {
                 <option value="">Select product</option>
                 {productList.map((product) => (
                   <option key={product.id} value={product.id}>
-                    {product.productName}
+                    {product.productname}
                   </option>
                 ))}
               </select>
@@ -175,18 +167,14 @@ export default function AddClaim() {
                 value={userId}
                 onChange={onInputChange}
               />
-              </div>
-                <div className="mb-2">
+            </div>
+                <div className="mb-3">
                 <label htmlFor="image" className="form-label">
                 Upload Image
-                </label>
-                <div>
                 <ImageUploader onImageUpload={(id) => setClaim({ ...claim, imageId: id })}/>
-                {claimErrors.imageId && (
-                <div className="invalid-feedback">{claimErrors.imageId}</div>
-                )}
+                </label>
                 </div>
-                </div>
+                
                 <div className="text-center">
                 <button type="submit" className="btn btn-primary">
                 Submit
