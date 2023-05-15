@@ -15,11 +15,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.ObjectError;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -43,10 +47,10 @@ public class UserController {
     @PostMapping("/create")
     public ResponseEntity<?> createUser(@Valid @RequestBody UserRequestDTO userRequestDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            List<String> errorMessages = bindingResult.getAllErrors()
-                    .stream()
-                    .map(ObjectError::getDefaultMessage)
-                    .collect(Collectors.toList());
+            Map<String,String> errorMessages = new HashMap<>();
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                errorMessages.put(error.getField(),error.getDefaultMessage());
+            }
             return ResponseEntity.badRequest().body(errorMessages);
         }
         UserResponseDTO savedUserDTO = userService.createUser(userRequestDTO);

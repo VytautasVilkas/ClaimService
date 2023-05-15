@@ -53,7 +53,7 @@ export default function AddClaim() {
       const response = await axios.post('http://localhost:9000/client/addclaim', claim);
       const { id } = response.data;
       console.log('Claim added with ID:', id);
-      navigate('/');
+      navigate('/home');
     } catch (error) {
       if (error.response && error.response.data) {
         const { data } = error.response;
@@ -179,7 +179,7 @@ export default function AddClaim() {
                 <button type="submit" className="btn btn-primary">
                 Submit
                 </button>
-                <Link className="btn btn-danger mx-2" to="/">
+                <Link className="btn btn-danger mx-2" to="/home">
                 Cancel
                 </Link>
               </div>

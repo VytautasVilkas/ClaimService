@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Addclaim from './users/Addclaim';
 import EditClaim from './users/EditClaim';
 import Login from './pages/Login';
+import Registration from './pages/Registration';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -26,6 +27,7 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/addclaim" element={<Addclaim />} />
           <Route path="/editclaim/:id" element={<EditClaim />} />
+          <Route path="/registration" element={<Registration />} />
           <Route path="/" element={<Login onLogin={handleLogin} />} />
         </Routes>
       </Router>

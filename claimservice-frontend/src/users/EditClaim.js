@@ -65,7 +65,7 @@ export default function UpdateClaim() {
 
       const { id: claimId } = response.data;
       console.log('Claim updated with ID:', claimId);
-      navigate('/');
+      navigate('/home');
     } catch (error) {
       if (error.response && error.response.data) {
         const { data } = error.response;
@@ -147,7 +147,7 @@ export default function UpdateClaim() {
             </div>
                 <div className="mb-3">
                 <label htmlFor="image" className="form-label">
-                Upload Image
+                
                 <ImageUploader onImageUpload={(id) => setClaim({ ...claim, image: id })} />
                 </label>
                 </div>
@@ -155,7 +155,7 @@ export default function UpdateClaim() {
                 <button type="submit" className="btn btn-primary">
                 Submit
                 </button>
-                <Link className="btn btn-danger mx-2" to="/">
+                <Link className="btn btn-danger mx-2" to="/home">
                 Cancel
                 </Link>
               </div>

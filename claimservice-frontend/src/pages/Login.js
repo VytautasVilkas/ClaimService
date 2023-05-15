@@ -24,17 +24,17 @@ function Login() {
       const isValidUser = response.data;
 
       if (isValidUser) {
-        // User credentials are valid, perform the necessary actions
-        // For example, redirect to the homepage or set an authenticated state
-        navigate('/home'); // Redirect to the homepage
+    
+        navigate('/home');
       } else {
-        // User credentials are invalid, display an error message
         setError('Invalid username or password');
       }
     } catch (error) {
-      // Handle any errors that occurred during the request
       setError('An error occurred. Please try again.');
     }
+  };
+  const handleRegistrationClick = () => {
+    navigate('/registration');
   };
 
   return (
@@ -73,6 +73,9 @@ function Login() {
             <div className="text-center">
               <button type="submit" className="btn btn-primary">
                 Login
+              </button>
+              <button type="button" className="btn btn-primary" onClick={handleRegistrationClick}>
+                Register
               </button>
             </div>
           </form>
