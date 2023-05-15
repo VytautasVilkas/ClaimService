@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import PictureComponent from '../components/PictureComponent';
 import { Link } from 'react-router-dom';
+import moment from 'moment';
 
 
 
@@ -25,6 +26,22 @@ export default function Home() {
     await axios.delete(`http://localhost:9000/client/deleteclaim/${id}`);
     loadClaims();
   };
+  
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+  };
+  const formatDate = (dateString) => {
+    if (!dateString) {
+      return ''; // or return a default value if needed
+    }
+  
+    const [datePart, timePart] = dateString.split('T');
+    const [year, month, day] = datePart.split('-');
+    const [hour, minute, second] = timePart.split(':');
+    const formattedDate = new Date(year, month - 1, day, hour, minute, second);
+    return formattedDate.toLocaleDateString();
+  };
 
   return (
     <div className="container">
@@ -37,6 +54,7 @@ export default function Home() {
               <th scope="col">Damage</th>
               <th scope="col">Product Name</th>
               <th scope="col">Photo</th>
+              <th scope="col">Data</th>
               <th scope="col">Action</th>
             </tr>
           </thead>
@@ -45,7 +63,7 @@ export default function Home() {
               <tr key={index}>
                 <th scope="row">{index + 1}</th>
                 <td>{claim.message}</td>
-                <td>{Number(claim.damage)}</td>
+                <td>{formatCurrency(claim.damage)}</td>
                 <td>{claim.productName}</td>
                 <td>
                   {claim.photoId ? (
@@ -54,6 +72,8 @@ export default function Home() {
                     <span>No Photo Available</span>
                   )}
                 </td>
+                <td>{formatDate(claim.date)}</td>
+
                 <td>
                   <Link className="btn btn-outline-primary mx-2"
                   to={`/editclaim/${claim.id}`}>
