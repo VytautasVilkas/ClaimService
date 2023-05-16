@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface ClaimRepository extends JpaRepository<Claim,Long> {
 
     List<Claim> findAll();
-
+    List<Claim> findByUserId(Long userId);
 
     Optional<Claim> findById(Long id);
 }

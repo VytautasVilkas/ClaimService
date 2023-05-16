@@ -10,6 +10,7 @@ export default function Home() {
   const [claims, setClaims] = useState([]);
   const username = localStorage.getItem('username');
   
+  
   const handleAddClaim = () => {
     navigate('/addclaim');
   };
@@ -21,7 +22,8 @@ export default function Home() {
    
   const loadClaims = async () => {
     try {
-      const result = await axios.get('http://localhost:9000/client/allclaims');
+      const userId = localStorage.getItem('userId');
+      const result = await axios.get(`http://localhost:9000/client/findClaimsByUser/${userId}`);
       setClaims(result.data);
     } catch (error) {
       console.error('Error fetching claims:', error);
@@ -61,9 +63,6 @@ export default function Home() {
   };
 
   return (
-    
-    
-    
     
     <div className="container">
       <h2>Hello, {username}!</h2> {/* Display the greeting message */}

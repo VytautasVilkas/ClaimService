@@ -2,6 +2,7 @@ package ClaimService.ClaimService.ClaimService.Service;
 
 import ClaimService.ClaimService.ClaimService.Exception.ClaimNotFoundException;
 import ClaimService.ClaimService.ClaimService.Exception.ProductNotFoundException;
+import ClaimService.ClaimService.ClaimService.Exception.UserNotFoundException;
 import ClaimService.ClaimService.ClaimService.Models.Claim;
 import ClaimService.ClaimService.ClaimService.Models.ImageData;
 import ClaimService.ClaimService.ClaimService.Models.Product;
@@ -92,6 +93,18 @@ public class ClaimService {
                 .orElseThrow(() -> new ClaimNotFoundException(claimId));
         return modelMapper.map(claim, ClaimResponseDTO.class);
     }
+    public List<ClaimResponseDTO> findClaimsByUser(Long userId) {
+        List<Claim> claims = claimRepository.findByUserId(userId);
+        if (claims.isEmpty()) {
+            throw new UserNotFoundException(userId);
+        }
+        return claims.stream()
+                .map(claim -> modelMapper.map(claim, ClaimResponseDTO.class))
+                .collect(Collectors.toList());
+    }
+
+
+
     public List<ClaimResponseDTO> findAllClaims() {
         List<Claim> claims = claimRepository.findAll();
         return claims.stream()

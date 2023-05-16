@@ -21,22 +21,16 @@ function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     try {
       const response = await axios.post('http://localhost:9000/users/login', { username, password });
       const { isValidUser, user } = response.data;
-
       if (isValidUser) {
         console.log(user.id);
         console.log(user.username);
         console.log(user.email);
-
         localStorage.setItem('userId', user.id);
-        localStorage.setItem('name', user.username);
-        
+        localStorage.setItem('username', user.username);
         setUserId(user.id); 
-        
-
         navigate('/home', { state: { userId: user.id } });
       } else {
         setError('Invalid username or password');
@@ -45,7 +39,6 @@ function Login() {
       setError('An error occurred. Please try again.');
     }
   };
-
   const handleRegistrationClick = () => {
     navigate('/registration');
   };

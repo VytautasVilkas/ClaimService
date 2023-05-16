@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import java.time.LocalDateTime;
 
 
-@Data
+    @Data
     @RequiredArgsConstructor
     public class ClaimResponseDTO {
         private Long id;
@@ -18,5 +18,10 @@ import java.time.LocalDateTime;
         private Long photoId;
         private String productName;
         private String userName;
+        private long userId;
+
+
+
+
     }
 

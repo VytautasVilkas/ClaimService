@@ -97,6 +97,12 @@ public class ClaimController {
         List<ClaimResponseDTO> claimResponseDTOList = claimService.findAllClaims();
         return ResponseEntity.ok(claimResponseDTOList);
         }
+    @Transactional
+    @GetMapping("/findClaimsByUser/{userId}")
+    public ResponseEntity<List<ClaimResponseDTO>> findClaimByUser(@PathVariable Long userId) {
+        List<ClaimResponseDTO> claimResponseDTO = claimService.findClaimsByUser(userId);
+        return ResponseEntity.ok(claimResponseDTO);
+    }
 
 
 

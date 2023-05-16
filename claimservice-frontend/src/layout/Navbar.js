@@ -1,13 +1,19 @@
 import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFlag, faLanguage } from '@fortawesome/free-solid-svg-icons';
+import { faFlag,  } from '@fortawesome/free-solid-svg-icons';
 
 export default function Navbar() {
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
+  };
+  const handleLogout = () => {
+    localStorage.clear(); 
+    navigate('/'); 
   };
 
   return (
@@ -43,9 +49,18 @@ export default function Navbar() {
                 </button>
               </li>
             </ul>
+            <ul className="navbar-nav ml-auto">
+              <li className="nav-item ml-auto">
+                <button className="btn btn-link nav-link" onClick={handleLogout}>
+                  Logout
+                </button>
+              </li>
+            </ul>
           </div>
         </div>
       </nav>
     </div>
   );
-}
+};
+
+
