@@ -1,13 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import PictureComponent from '../components/PictureComponent';
-import { Link } from 'react-router-dom';
-
-
-
+import { Link, useNavigate } from 'react-router-dom';
+import { UserContext } from '../UserContext';
 
 export default function Home() {
+  const navigate = useNavigate();
+  
   const [claims, setClaims] = useState([]);
+  const username = localStorage.getItem('username');
+  
+  const handleAddClaim = () => {
+    navigate('/addclaim');
+  };
 
   useEffect(() => {
     loadClaims();
@@ -22,6 +27,7 @@ export default function Home() {
       console.error('Error fetching claims:', error);
     }
   };
+  
   const deleteClaim = async (id, photoId) => {
     try {
       // Delete the claim
@@ -55,7 +61,12 @@ export default function Home() {
   };
 
   return (
+    
+    
+    
+    
     <div className="container">
+      <h2>Hello, {username}!</h2> {/* Display the greeting message */}
       <div className="py-4">
         <table className="table border shadow">
           <thead>
@@ -99,7 +110,9 @@ export default function Home() {
           </tbody>
         </table>
         <div className="text-center">
-          <Link className="btn btn-primary" to="/addclaim">Add Claim</Link>
+        <Link className="btn btn-primary" to="/addclaim">
+          Add Claim
+              </Link>
         </div>
       </div>
     </div>

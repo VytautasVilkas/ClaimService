@@ -17,6 +17,7 @@ public class UserResponseDTO {
         private String surname;
         private String email;
         private Role role;
+        boolean isValid=true;
 //        private List<Claim> claims;
 
 

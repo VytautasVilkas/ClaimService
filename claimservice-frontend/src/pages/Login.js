@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { UserContext } from '../UserContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 function Login() {
+  const { t } = useTranslation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
+  const { setIsLoggedIn, setUserId } = useContext(UserContext); 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
   };
@@ -21,11 +24,20 @@ function Login() {
 
     try {
       const response = await axios.post('http://localhost:9000/users/login', { username, password });
-      const isValidUser = response.data;
+      const { isValidUser, user } = response.data;
 
       if (isValidUser) {
-    
-        navigate('/home');
+        console.log(user.id);
+        console.log(user.username);
+        console.log(user.email);
+
+        localStorage.setItem('userId', user.id);
+        localStorage.setItem('name', user.username);
+        
+        setUserId(user.id); 
+        
+
+        navigate('/home', { state: { userId: user.id } });
       } else {
         setError('Invalid username or password');
       }
@@ -33,9 +45,11 @@ function Login() {
       setError('An error occurred. Please try again.');
     }
   };
+
   const handleRegistrationClick = () => {
     navigate('/registration');
   };
+
 
   return (
     <div className="container">
@@ -46,26 +60,26 @@ function Login() {
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
               <label htmlFor="username" className="form-label">
-                Username:
+              {t('username')}
               </label>
               <input
                 type="text"
                 className="form-control"
                 id="username"
-                placeholder="Enter username"
+                placeholder={t('enter Username')}
                 value={username}
                 onChange={handleUsernameChange}
               />
             </div>
             <div className="mb-3">
               <label htmlFor="password" className="form-label">
-                Password:
+              {t('password')}
               </label>
               <input
                 type="password"
                 className="form-control"
                 id="password"
-                placeholder="Enter password"
+                placeholder={t('password')}
                 value={password}
                 onChange={handlePasswordChange}
               />

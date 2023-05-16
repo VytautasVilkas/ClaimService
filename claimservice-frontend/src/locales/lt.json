@@ -1,0 +1,10 @@
+{
+    "login": "Prisijungti",
+    "username": "Vartotojo vardas:",
+    "password": "Slaptažodis:",
+    "enterUsername": "Įveskite vartotojo vardą",
+    "enterPassword": "Įveskite slaptažodį",
+    "loginButton": "Prisijungti",
+    "registerButton": "Registruotis"
+  }
+  

@@ -89,17 +89,27 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
     @PostMapping("/login")
-    public boolean checkUserCredentials(@Valid @RequestBody UserLoginRequest loginRequest) {
+    public ResponseEntity<HashMap<String, Object>> checkUserCredentials(@Valid @RequestBody UserLoginRequest loginRequest) {
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
         User user = userRepository.findByUsername(username);
+
         if (user != null) {
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             boolean isPasswordValid = passwordEncoder.matches(password, user.getPassword());
+
             if (isPasswordValid) {
-                return true;
+                UserResponseDTO response = modelMapper.map(user, UserResponseDTO.class);
+                response.setValid(true);
+
+                HashMap<String, Object> resultMap = new HashMap<>();
+                resultMap.put("isValidUser", true);
+                resultMap.put("user", response);
+
+                return ResponseEntity.ok(resultMap);
             }
         }
-        return false;
+
+        return ResponseEntity.ok().body(new HashMap<>());
     }
 }

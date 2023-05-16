@@ -1,0 +1,11 @@
+
+{
+    "login": "Login",
+    "username": "Username:",
+    "password": "Password:",
+    "enterUsername": "Enter username",
+    "enterPassword": "Enter password",
+    "loginButton": "Login",
+    "registerButton": "Register"
+  }
+  

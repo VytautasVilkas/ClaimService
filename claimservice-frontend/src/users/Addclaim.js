@@ -1,22 +1,30 @@
-import React, { useEffect,useState } from 'react';
+import React, { useEffect,useState,useContext } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import ImageUploader from '../components/ImageUploader';
+import { useLocation } from 'react-router-dom';
+import { UserContext } from '../UserContext';
+
 
 
 
 export default function AddClaim() {
+  const location = useLocation();
+  
   const navigate = useNavigate();
-
+  const userId = localStorage.getItem('userId');
   const [claim, setClaim] = useState({
     message: '',
     damage: 0.0,
     productId: null,
-    userId: '',
     imageId: '',
+    userId: userId,
+    
   });
+ 
+ 
   const [claimErrors, setClaimErrors] = useState({});
-  const { message, damage, productId, userId, imageId } = claim;
+  const { message, damage, productId,} = claim;
   const [productList, setProductList] = useState([]);
 
     useEffect(() => {
@@ -50,9 +58,13 @@ export default function AddClaim() {
       return;
     }
     try {
+      
+      
       const response = await axios.post('http://localhost:9000/client/addclaim', claim);
+      
       const { id } = response.data;
       console.log('Claim added with ID:', id);
+      console.log('Claim:', claim);
       navigate('/home');
     } catch (error) {
       if (error.response && error.response.data) {
@@ -68,30 +80,32 @@ export default function AddClaim() {
         console.log(claimErrors);
       }
       console.error('Error adding claim:', error);
+      console.log('Claim:', claim);
     }
   };
-  const handleImageUpload = async (selectedImage) => {
-    if (!selectedImage) {
-      setClaimErrors({ ...claimErrors, imageId: 'Please upload an image' });
-      return;
-    }
+  // const handleImageUpload = async (selectedImage) => {
+  //   if (!selectedImage) {
+  //     setClaimErrors({ ...claimErrors, imageId: 'Please upload an image' });
+  //     return;
+  //   }
   
-    const formData = new FormData();
-    formData.append('image', selectedImage);
-
-    try {
-      const response = await axios.post('http://localhost:9000/image/add', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      const { id: imageId } = response.data;
-      return imageId;
-    } catch (error) {
-      console.error('Error uploading image:', error);
-    }
-  };
+  //   const formData = new FormData();
+  //   formData.append('image', selectedImage);
+  
+  //   try {
+  //     const response = await axios.post('http://localhost:9000/image/add', formData, {
+  //       headers: {
+  //         'Content-Type': 'multipart/form-data',
+  //       },
+  //     });
+  
+  //     const { id } = response.data;
+  //     setClaim({ ...claim, imageId: selectedImage.id }); // Set the imageId in the claim state
+  //   } catch (error) {
+  //     console.error('Error uploading image:', error);
+  //   }
+  // };
+  
   return (
     <div className="container">
       <div className="row">
@@ -154,27 +168,12 @@ export default function AddClaim() {
                 <div className="invalid-feedback d-block">{claimErrors.productId}</div>
               )}
             </div>
-            <div className="mb-3">
-              <label htmlFor="userId" className="form-label">
-                User ID
-              </label>
-              <input
-                type="number"
-                className="form-control"
-                id="userId"
-                placeholder="Enter user ID"
-                name="userId"
-                value={userId}
-                onChange={onInputChange}
-              />
-            </div>
+          
                 <div className="mb-3">
                 <label htmlFor="image" className="form-label">
-                
                 <ImageUploader onImageUpload={(id) => setClaim({ ...claim, imageId: id })}/>
                 </label>
                 </div>
-                
                 <div className="text-center">
                 <button type="submit" className="btn btn-primary">
                 Submit
