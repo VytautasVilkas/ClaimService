@@ -30,12 +30,14 @@ function Login() {
         console.log(user.email);
         localStorage.setItem('userId', user.id);
         localStorage.setItem('username', user.username);
-        setUserId(user.id); 
-        navigate('/home', { state: { userId: user.id } });
+        setIsLoggedIn(true);
+        navigate('/home');
+    
       } else {
         setError('Invalid username or password');
       }
     } catch (error) {
+      console.log(error)
       setError('An error occurred. Please try again.');
     }
   };

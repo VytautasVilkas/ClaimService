@@ -6,11 +6,11 @@ import { faFlag,  } from '@fortawesome/free-solid-svg-icons';
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  // const { t, i18n } = useTranslation();
 
-  const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
-  };
+  // const changeLanguage = (lng) => {
+  //   i18n.changeLanguage(lng);
+  // };
   const handleLogout = () => {
     localStorage.clear(); 
     navigate('/'); 
@@ -62,5 +62,4 @@ export default function Navbar() {
     </div>
   );
 };
-
 

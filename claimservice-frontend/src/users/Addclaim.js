@@ -1,16 +1,9 @@
-import React, { useEffect,useState,useContext } from 'react';
+import React, { useEffect,useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import ImageUploader from '../components/ImageUploader';
-import { useLocation } from 'react-router-dom';
-import { UserContext } from '../UserContext';
-
-
-
 
 export default function AddClaim() {
-  const location = useLocation();
-  
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
   const [claim, setClaim] = useState({
@@ -21,8 +14,6 @@ export default function AddClaim() {
     userId: userId,
     
   });
- 
- 
   const [claimErrors, setClaimErrors] = useState({});
   const { message, damage, productId,} = claim;
   const [productList, setProductList] = useState([]);
@@ -49,7 +40,6 @@ export default function AddClaim() {
   const onInputChange = (e) => {
     setClaim({ ...claim, [e.target.name]: e.target.value });
   };
-
   const onSubmit = async (e) => {
     e.preventDefault();
     
@@ -58,10 +48,7 @@ export default function AddClaim() {
       return;
     }
     try {
-      
-      
       const response = await axios.post('http://localhost:9000/client/addclaim', claim);
-      
       const { id } = response.data;
       console.log('Claim added with ID:', id);
       console.log('Claim:', claim);
@@ -83,29 +70,6 @@ export default function AddClaim() {
       console.log('Claim:', claim);
     }
   };
-  // const handleImageUpload = async (selectedImage) => {
-  //   if (!selectedImage) {
-  //     setClaimErrors({ ...claimErrors, imageId: 'Please upload an image' });
-  //     return;
-  //   }
-  
-  //   const formData = new FormData();
-  //   formData.append('image', selectedImage);
-  
-  //   try {
-  //     const response = await axios.post('http://localhost:9000/image/add', formData, {
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data',
-  //       },
-  //     });
-  
-  //     const { id } = response.data;
-  //     setClaim({ ...claim, imageId: selectedImage.id }); // Set the imageId in the claim state
-  //   } catch (error) {
-  //     console.error('Error uploading image:', error);
-  //   }
-  // };
-  
   return (
     <div className="container">
       <div className="row">
