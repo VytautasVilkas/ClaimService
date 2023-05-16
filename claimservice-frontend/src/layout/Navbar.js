@@ -36,7 +36,7 @@ export default function Navbar() {
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav ml-auto">
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <button className="btn btn-link nav-link" onClick={() => changeLanguage('en')}>
                   <FontAwesomeIcon icon={faFlag} className="mr-1" />
                   English
@@ -47,7 +47,7 @@ export default function Navbar() {
                   <FontAwesomeIcon icon={faFlag} className="mr-1" />
                   Lithuanian
                 </button>
-              </li>
+              </li> */}
             </ul>
             <ul className="navbar-nav ml-auto">
               <li className="nav-item ml-auto">

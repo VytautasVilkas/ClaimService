@@ -18,8 +18,6 @@ export default function Home() {
   useEffect(() => {
     loadClaims();
   }, []);
-  
-   
   const loadClaims = async () => {
     try {
       const userId = localStorage.getItem('userId');
@@ -29,19 +27,30 @@ export default function Home() {
       console.error('Error fetching claims:', error);
     }
   };
+
+
+
+
+
+
+
+
+
   
   const deleteClaim = async (id, photoId) => {
     try {
-      // Delete the claim
+      
       await axios.delete(`http://localhost:9000/client/deleteclaim/${id}`);
 
-      // Delete the associated image
+      
       if (photoId) {
         await axios.delete(`http://localhost:9000/image/delete/${photoId}`);
       }
 
       // Reload the claims
-      await loadClaims();
+      setClaims(prevClaims => prevClaims.filter(claim => claim.id !== id));
+
+      // await loadClaims();
     } catch (error) {
       console.error('Error deleting claim:', error);
     }

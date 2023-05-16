@@ -69,15 +69,23 @@ public class ClaimController {
         }
         @PutMapping("/updateclaim/{id}")
         public ResponseEntity<?> updateClaim(@PathVariable Long id,@Valid @RequestBody ClaimUpdateDTO claimUpdateDTO,BindingResult bindingResult) {
-                if (bindingResult.hasErrors()) {
-                        List<String> errorMessages = bindingResult.getAllErrors()
-                                .stream()
-                                .map(ObjectError::getDefaultMessage)
-                                .collect(Collectors.toList());
-                        return ResponseEntity.badRequest().body(errorMessages);
+            if (bindingResult.hasErrors()) {
+                Map<String, String> validationErrors = new HashMap<>();
+                for (FieldError error : bindingResult.getFieldErrors()) {
+                    validationErrors.put(error.getField(), error.getDefaultMessage());
                 }
+                return ResponseEntity.badRequest().body(validationErrors);
+            }
+            try {
                 ClaimResponseDTO updatedClaim = claimService.updateClaim(id, claimUpdateDTO);
                 return ResponseEntity.ok(updatedClaim);
+            }catch (ProductNotFoundException e) {
+                Map<String, String> validationErrors = new HashMap<>();
+                validationErrors.put("productId", "Product not found.");
+                return ResponseEntity.badRequest().body(validationErrors);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add claim.");
+            }
         }
 
         @DeleteMapping("/deleteclaim/{id}")
