@@ -61,8 +61,6 @@ public class ClaimService {
         return modelMapper.map(savedClaim, ClaimResponseDTO.class);
     }
 
-
-
     public ClaimResponseDTO updateClaim(Long claimId, ClaimUpdateDTO claimUpdateDTO) {
         Optional<Claim> existingClaimOptional = claimRepository.findById(claimId);
         if (existingClaimOptional.isPresent()) {
@@ -102,8 +100,6 @@ public class ClaimService {
                 .map(claim -> modelMapper.map(claim, ClaimResponseDTO.class))
                 .collect(Collectors.toList());
     }
-
-
 
     public List<ClaimResponseDTO> findAllClaims() {
         List<Claim> claims = claimRepository.findAll();

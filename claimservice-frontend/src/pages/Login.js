@@ -61,7 +61,7 @@ function Login() {
                 type="text"
                 className="form-control"
                 id="username"
-                placeholder={t('enter Username')}
+                placeholder={t('Enter Username')}
                 value={username}
                 onChange={handleUsernameChange}
               />
@@ -74,7 +74,7 @@ function Login() {
                 type="password"
                 className="form-control"
                 id="password"
-                placeholder={t('password')}
+                placeholder={t('Enter Password')}
                 value={password}
                 onChange={handlePasswordChange}
               />

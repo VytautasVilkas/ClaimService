@@ -20,7 +20,7 @@ public class ModelMapperConfig {
 
 		modelMapper.addMappings(new PropertyMap<ClaimRequestDTO, Claim>() {
 			protected void configure() {
-				skip(destination.getId()); // Skip mapping for the id property
+				skip(destination.getId());
 			}
 		});
 		modelMapper.createTypeMap(Claim.class, ClaimResponseDTO.class)
@@ -28,8 +28,8 @@ public class ModelMapperConfig {
 
 		modelMapper.addMappings(new PropertyMap<ClaimUpdateDTO, Claim>() {
 			protected void configure() {
-				map().setUser(null); // Skip mapping for the user property
-				map().setImages(null); // Skip mapping for the images property
+				map().setUser(null);
+				map().setImages(null);
 			}
 		});
 
